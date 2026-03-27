@@ -15,9 +15,6 @@ export default function CreatePage() {
       <p style={{ marginTop: "16px" }}>
         <Link href="/company">Back to list</Link>
       </p>
-      <p style={{ color: "#94a3b8", fontSize: 13 }}>
-        Tip: Image ID is the WordPress Media Library attachment ID.
-      </p>
     </main>
   );
 }
