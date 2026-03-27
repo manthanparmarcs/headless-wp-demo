@@ -95,7 +95,21 @@ export async function updateCompany(id, formData) {
 export async function deleteCompany(formData) {
   const id = formData.get("id");
   if (!id) return;
-  await fetchGraphQL(DELETE_COMPANY, { id }, { auth: true });
-  revalidatePath("/company");
+
+  try {
+    // 1. Perform the operation
+    await fetchGraphQL(DELETE_COMPANY, { id }, { auth: true });
+    
+    // 2. Clear the cache
+    revalidatePath("/company");
+  } catch (error) {
+    // 3. Log the error for yourself in Vercel Logs
+    console.error("Delete failed:", error);
+    
+    // 4. Return an error instead of crashing the server
+    return { error: "Could not delete company." };
+  }
+
+  // 5. REDIRECT OUTSIDE THE TRY/CATCH
   redirect("/company");
 }
