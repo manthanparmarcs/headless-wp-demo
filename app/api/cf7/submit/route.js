@@ -14,7 +14,7 @@ export async function POST(request) {
     // CF7 URL (WordPress REST endpoint provided by the Contact Form 7 REST API plugin)
     // Prefer explicit CF7_FEEDBACK_URL, but allow constructing it from components for easier setup.
     const cf7RestBaseUrl =
-      process.env.CF7_REST_BASE_URL || "http://graphql-practise.local/wp-json";
+      process.env.CF7_REST_BASE_URL || "https://manthan-parmar-cs-demo.infinityfree.me/wp-json";
     const cf7RestNamespace = process.env.CF7_REST_NAMESPACE || "contact-form-7";
     const cf7FormId = process.env.CF7_FORM_ID || "42";
 

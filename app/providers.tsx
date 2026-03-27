@@ -8,7 +8,7 @@ const client = new ApolloClient({
   link: new HttpLink({
     uri:
       process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL ||
-      "http://graphql-practise.local/graphql",
+      "https://manthan-parmar-cs-demo.infinityfree.me/graphql",
   }),
   cache: new InMemoryCache(),
 });

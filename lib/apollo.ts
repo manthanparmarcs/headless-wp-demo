@@ -5,7 +5,7 @@ import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 const link = new HttpLink({
   uri:
     process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL ||
-    "http://graphql-practise.local/graphql",
+    "https://manthan-parmar-cs-demo.infinityfree.me/graphql",
   credentials: "same-origin", // optional, for cookies/auth
 });
 
