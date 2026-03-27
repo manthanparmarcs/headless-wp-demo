@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
+import { Buffer } from "node:buffer"; // <-- important for Vercel
 import { fetchGraphQL } from "@/lib/graphql";
 import {
   CREATE_COMPANY,
@@ -12,16 +12,10 @@ import {
   UPDATE_COMPANY_WITH_FEATURED_IMAGE,
 } from "@/lib/mutations";
 
-/**
- * Convert numeric ID to WPGraphQL global ID
- */
 function toGlobalId(type, id) {
   return Buffer.from(`${type}:${id}`).toString("base64");
 }
 
-/**
- * Parse featured image ID safely
- */
 function parseFeaturedImageId(raw) {
   if (!raw) return null;
   const parsed = Number.parseInt(String(raw), 10);
@@ -29,9 +23,6 @@ function parseFeaturedImageId(raw) {
   return parsed;
 }
 
-/**
- * Create a new company
- */
 export async function createCompany(formData) {
   const title = formData.get("title")?.trim();
   if (!title) throw new Error("Title is required");
@@ -40,41 +31,22 @@ export async function createCompany(formData) {
 
   try {
     if (featuredImageId) {
-      // Try mutation with featured image
       await fetchGraphQL(
         CREATE_COMPANY_WITH_FEATURED_IMAGE,
         { title, featuredImageId },
         { auth: true }
       );
     } else {
-      // Mutation without featured image
-      await fetchGraphQL(
-        CREATE_COMPANY,
-        { title },
-        { auth: true }
-      );
+      await fetchGraphQL(CREATE_COMPANY, { title }, { auth: true });
     }
-
     revalidatePath("/company");
     redirect("/company");
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-
-    // Fallback if WPGraphQL schema does not support featuredImageId
-    if (featuredImageId && message.toLowerCase().includes("featuredimageid")) {
-      await fetchGraphQL(CREATE_COMPANY, { title }, { auth: true });
-      revalidatePath("/company");
-      redirect("/company");
-    } else {
-      console.error("Create company failed:", error);
-      throw new Error("Could not create company");
-    }
+    console.error("Create failed:", error);
+    throw new Error("Could not create company");
   }
 }
 
-/**
- * Update an existing company
- */
 export async function updateCompany(id, formData) {
   if (!id) throw new Error("Company ID is required");
   const globalId = toGlobalId("company", id);
@@ -98,30 +70,14 @@ export async function updateCompany(id, formData) {
         { auth: true }
       );
     }
-
     revalidatePath("/company");
     redirect("/company");
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-
-    if (featuredImageId && message.toLowerCase().includes("featuredimageid")) {
-      await fetchGraphQL(
-        UPDATE_COMPANY,
-        { id: globalId, title },
-        { auth: true }
-      );
-      revalidatePath("/company");
-      redirect("/company");
-    } else {
-      console.error("Update company failed:", error);
-      throw new Error("Could not update company");
-    }
+    console.error("Update failed:", error);
+    throw new Error("Could not update company");
   }
 }
 
-/**
- * Delete a company
- */
 export async function deleteCompany(formData) {
   const id = formData.get("id");
   if (!id) throw new Error("Company ID is required");
@@ -133,7 +89,7 @@ export async function deleteCompany(formData) {
     revalidatePath("/company");
     redirect("/company");
   } catch (error) {
-    console.error("Delete company failed:", error);
+    console.error("Delete failed:", error);
     throw new Error("Could not delete company");
   }
 }
