@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { createCompany } from "../actions";
+import CreateCompanyForm from "../components/create-company-form";
 
 export default function CreatePage() {
   return (
@@ -10,66 +10,7 @@ export default function CreatePage() {
         Create a company entry and publish it to WordPress.
       </p>
 
-      <form
-        action={createCompany}
-        style={{
-          border: "1px solid #1f2937",
-          borderRadius: 12,
-          padding: 16,
-          background: "#0b1220",
-          display: "grid",
-          gap: 14,
-        }}
-      >
-        <label style={{ display: "grid", gap: 8 }}>
-          <span>Company title</span>
-          <input
-            name="title"
-            placeholder="Company title"
-            required
-            style={{
-              background: "#020617",
-              border: "1px solid #334155",
-              color: "#e2e8f0",
-              borderRadius: 10,
-              padding: "10px 12px",
-            }}
-          />
-        </label>
-
-        {/* <label style={{ display: "grid", gap: 8 }}>
-          <span>Featured image ID (optional)</span>
-          <input
-            type="number"
-            name="featuredImageId"
-            placeholder="Example: 123"
-            min={1}
-            style={{
-              background: "#020617",
-              border: "1px solid #334155",
-              color: "#e2e8f0",
-              borderRadius: 10,
-              padding: "10px 12px",
-            }}
-          />
-        </label> */}
-
-        <div>
-          <button
-            type="submit"
-            style={{
-              border: "1px solid #244",
-              background: "#0b3f3f",
-              color: "#fff",
-              borderRadius: 10,
-              padding: "10px 14px",
-              cursor: "pointer",
-            }}
-          >
-            Create &amp; Publish
-          </button>
-        </div>
-      </form>
+      <CreateCompanyForm />
 
       <p style={{ marginTop: "16px" }}>
         <Link href="/company">Back to list</Link>

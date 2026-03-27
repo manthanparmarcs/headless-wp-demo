@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Buffer } from "node:buffer"; // <-- important for Vercel
+import { Buffer } from "node:buffer";
 import { fetchGraphQL } from "@/lib/graphql";
 import {
   CREATE_COMPANY,
@@ -23,9 +23,17 @@ function parseFeaturedImageId(raw) {
   return parsed;
 }
 
-export async function createCompany(formData) {
+function getErrorMessage(error, fallbackMessage) {
+  const message = error instanceof Error ? error.message : String(error);
+  if (!message) return fallbackMessage;
+  return message;
+}
+
+export async function createCompany(_prevState, formData) {
   const title = formData.get("title")?.trim();
-  if (!title) throw new Error("Title is required");
+  if (!title) {
+    return { error: "Title is required." };
+  }
 
   const featuredImageId = parseFeaturedImageId(formData.get("featuredImageId"));
 
@@ -41,20 +49,29 @@ export async function createCompany(formData) {
     }
   } catch (error) {
     console.error("Create failed:", error);
-    throw new Error("Could not create company");
+    return {
+      error: getErrorMessage(
+        error,
+        "Could not create company. Check Vercel WordPress auth environment variables."
+      ),
+    };
   }
 
   revalidatePath("/company");
   redirect("/company");
 }
 
-export async function updateCompany(id, formData) {
-  if (!id) throw new Error("Company ID is required");
-  const globalId = toGlobalId("company", id);
+export async function updateCompany(id, _prevState, formData) {
+  if (!id) {
+    return { error: "Company ID is required." };
+  }
 
   const title = formData.get("title")?.trim();
-  if (!title) throw new Error("Title is required");
+  if (!title) {
+    return { error: "Title is required." };
+  }
 
+  const globalId = toGlobalId("company", id);
   const featuredImageId = parseFeaturedImageId(formData.get("featuredImageId"));
 
   try {
@@ -73,16 +90,23 @@ export async function updateCompany(id, formData) {
     }
   } catch (error) {
     console.error("Update failed:", error);
-    throw new Error("Could not update company");
+    return {
+      error: getErrorMessage(
+        error,
+        "Could not update company. Check Vercel WordPress auth environment variables."
+      ),
+    };
   }
 
   revalidatePath("/company");
   redirect("/company");
 }
 
-export async function deleteCompany(formData) {
+export async function deleteCompany(_prevState, formData) {
   const id = formData.get("id");
-  if (!id) throw new Error("Company ID is required");
+  if (!id) {
+    return { error: "Company ID is required.", success: false };
+  }
 
   const globalId = toGlobalId("company", id);
 
@@ -90,9 +114,15 @@ export async function deleteCompany(formData) {
     await fetchGraphQL(DELETE_COMPANY, { id: globalId }, { auth: true });
   } catch (error) {
     console.error("Delete failed:", error);
-    throw new Error("Could not delete company");
+    return {
+      error: getErrorMessage(
+        error,
+        "Could not delete company. Check Vercel WordPress auth environment variables."
+      ),
+      success: false,
+    };
   }
 
   revalidatePath("/company");
-  redirect("/company");
+  return { error: "", success: true };
 }

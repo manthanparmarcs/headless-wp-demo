@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { fetchGraphQL } from "@/lib/graphql";
 import { GET_COMPANIES, GET_COMPANIES_WITH_FEATURED_IMAGE } from "@/lib/queries";
-import { deleteCompany } from "./actions";
+import DeleteCompanyForm from "./components/delete-company-form";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -158,22 +158,7 @@ export default async function Page() {
 
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <Link href={`/company/edit/${c.databaseId}`}>Edit</Link>
-              <form action={deleteCompany} style={{ display: "inline" }}>
-                <input type="hidden" name="id" value={c.databaseId || c.id} />
-                <button
-                  type="submit"
-                  style={{
-                    border: "1px solid #7f1d1d",
-                    background: "#450a0a",
-                    color: "#fecaca",
-                    borderRadius: 8,
-                    padding: "6px 10px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Delete
-                </button>
-              </form>
+              <DeleteCompanyForm id={c.databaseId || c.id} />
             </div>
           </article>
         ))}
