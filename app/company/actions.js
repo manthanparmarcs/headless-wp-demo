@@ -39,12 +39,13 @@ export async function createCompany(formData) {
     } else {
       await fetchGraphQL(CREATE_COMPANY, { title }, { auth: true });
     }
-    revalidatePath("/company");
-    redirect("/company");
   } catch (error) {
     console.error("Create failed:", error);
     throw new Error("Could not create company");
   }
+
+  revalidatePath("/company");
+  redirect("/company");
 }
 
 export async function updateCompany(id, formData) {
@@ -70,12 +71,13 @@ export async function updateCompany(id, formData) {
         { auth: true }
       );
     }
-    revalidatePath("/company");
-    redirect("/company");
   } catch (error) {
     console.error("Update failed:", error);
     throw new Error("Could not update company");
   }
+
+  revalidatePath("/company");
+  redirect("/company");
 }
 
 export async function deleteCompany(formData) {
@@ -86,10 +88,11 @@ export async function deleteCompany(formData) {
 
   try {
     await fetchGraphQL(DELETE_COMPANY, { id: globalId }, { auth: true });
-    revalidatePath("/company");
-    redirect("/company");
   } catch (error) {
     console.error("Delete failed:", error);
     throw new Error("Could not delete company");
   }
+
+  revalidatePath("/company");
+  redirect("/company");
 }
